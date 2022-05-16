@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const Sidebar = () => {
   const { data } = useSession();
-  console.log(data);
+  // console.log(data);
   return (
     <div className="space-y-2 min-w-max max-w-lg">
       {/* top */}
