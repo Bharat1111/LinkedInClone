@@ -1,9 +1,10 @@
 import { Avatar } from "@nextui-org/react";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
 
 import { modalState, modalTypeState } from "../atoms/modalAtom";
-import { getPostState } from "../atoms/postAtom";
+import { getPostState, handlePostState } from "../atoms/postAtom";
 
 const Post = ({ post, modalPost }) => {
   const [modalOpen, setModalOpen] = useRecoilState(modalState);
@@ -11,11 +12,24 @@ const Post = ({ post, modalPost }) => {
   const [postState, setPostState] = useRecoilState(getPostState);
   const [showInput, setShowInput] = useState(false);
   const [liked, setLiked] = useState(false);
+  const [handlePost, setHandlePost] = useRecoilState(handlePostState);
+
+  const { data: session } = useSession();
 
   const truncate = (string, n) => {
     return string?.length > n
       ? string.substr(0, n - 1) + "...see more"
       : string;
+  };
+
+  const deletePost = async () => {
+    const response = await fetch(`/api/posts/${post._id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    setHandlePost(true);
+    setModalOpen(false);
   };
 
   return (
@@ -35,7 +49,7 @@ const Post = ({ post, modalPost }) => {
           {/* time stamp */}
         </div>
         {modalPost ? (
-          <div onClick={setModalOpen(true)}>
+          <div onClick={() => setModalOpen(false)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-7 w-7 dark:text-white/75"
@@ -62,6 +76,7 @@ const Post = ({ post, modalPost }) => {
           </div>
         )}
       </div>
+
       {post.input && (
         <div className="px-2 5 break-all md:break-normal">
           {modalPost || showInput ? (
@@ -86,7 +101,7 @@ const Post = ({ post, modalPost }) => {
         />
       )}
 
-      <div>
+      <div className="flex justify-evenly items-center dark:border-t border-gray-600/80 mx-2.5 pt-2 text-black/60 dark:text-white/75">
         {modalPost ? (
           <button className="postButton">
             <svg
@@ -136,6 +151,41 @@ const Post = ({ post, modalPost }) => {
               </svg>
             )}
             <h4>Like</h4>
+          </button>
+        )}
+
+        {session?.user?.email === post.email ? (
+          <button
+            className="postButton focus:text-red-400"
+            onClick={deletePost}
+          >
+            {/* <DeleteRoundedIcon /> */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <h4>Delete post</h4>
+          </button>
+        ) : (
+          <button className="postButton ">
+            {/* <ReplyRoundedIcon className="-scale-x-100" /> */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+            </svg>
+            <h4>Share</h4>
           </button>
         )}
       </div>

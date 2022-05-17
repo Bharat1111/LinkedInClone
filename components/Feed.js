@@ -27,7 +27,7 @@ const Feed = ({ ssrPosts }) => {
     fetchPosts();
   }, [handlePost]);
 
-  console.log(posts, handlePost);
+  // console.log(posts, handlePost);
 
   return (
     <div className="space-y-6 pb-24 max-w-lg">
