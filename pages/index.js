@@ -74,7 +74,7 @@ export async function getServerSideProps(context) {
     .toArray();
 
   const results = await fetch(
-    `https://newsapi.org/v2/top-headlines?country=us&apikey=fc9d29c949ce49dd93ab05f18a5ed8d2`
+    `https://newsapi.org/v2/top-headlines?country=us&apikey=${process.env.NEWS_API}`
   ).then((res) => res.json());
 
   return {
