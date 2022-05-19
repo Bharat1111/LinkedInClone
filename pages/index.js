@@ -9,8 +9,9 @@ import Modal from "../components/Modal";
 import { useRecoilState } from "recoil";
 import { modalState, modalTypeState } from "../atoms/modalAtom";
 import { connectToDatabase } from "../util/mongodb";
+import Widgets from "../components/Widgets";
 
-export default function Home({ posts }) {
+export default function Home({ posts, articles }) {
   const Router = useRouter();
   const { status } = useSession({
     required: true,
@@ -21,7 +22,7 @@ export default function Home({ posts }) {
 
   const [modalOpen, setModalOpen] = useRecoilState(modalState);
   const [modalType, setModalType] = useRecoilState(modalTypeState);
-  console.log(modalOpen, modalType);
+  // console.log(modalOpen, modalType);
   return (
     <div className="bg-[#F3F2EF] dark:bg-black dark:text-white h-screen overflow-y-scroll md:space-y-6">
       <Head>
@@ -40,6 +41,7 @@ export default function Home({ posts }) {
           <Feed ssrPosts={posts} />
         </div>
         {/* widgets */}
+        <Widgets articles={articles} />
 
         <AnimatePresence>
           {modalOpen && (
@@ -71,9 +73,14 @@ export async function getServerSideProps(context) {
     .sort({ timestamp: -1 })
     .toArray();
 
+  const results = await fetch(
+    `https://newsapi.org/v2/top-headlines?country=us&apikey=fc9d29c949ce49dd93ab05f18a5ed8d2`
+  ).then((res) => res.json());
+
   return {
     props: {
       session,
+      articles: results.articles,
       posts: posts.map((post) => ({
         _id: post._id.toString(),
         input: post.input,

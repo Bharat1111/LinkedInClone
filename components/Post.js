@@ -2,6 +2,7 @@ import { Avatar } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
+// import TimeAgo from "timeago-react";
 
 import { modalState, modalTypeState } from "../atoms/modalAtom";
 import { getPostState, handlePostState } from "../atoms/postAtom";
@@ -47,6 +48,10 @@ const Post = ({ post, modalPost }) => {
           <p className="text-sm dark:text-white/75 opacity-80">{post.email}</p>
 
           {/* time stamp */}
+          {/* <TimeAgo
+            datetime={post.createdAt}
+            className="text-xs dark:text-white/75 opacity-80"
+          /> */}
         </div>
         {modalPost ? (
           <div onClick={() => setModalOpen(false)}>
